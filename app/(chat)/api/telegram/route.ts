@@ -2,6 +2,12 @@ import { generateText, stepCountIs } from "ai";
 import { getLanguageModel } from "@/lib/ai/providers";
 import { DEFAULT_CHAT_MODEL } from "@/lib/ai/models";
 import { getWeather } from "@/lib/ai/tools/get-weather";
+import { searchWeb } from "@/lib/ai/tools/search-web";
+import { getWikipedia } from "@/lib/ai/tools/get-wikipedia";
+import { getCurrentTime } from "@/lib/ai/tools/get-current-time";
+import { convertCurrency } from "@/lib/ai/tools/convert-currency";
+import { fetchUrl } from "@/lib/ai/tools/fetch-url";
+import { calculate } from "@/lib/ai/tools/calculate";
 import {
   getUser,
   createUser,
@@ -186,10 +192,10 @@ export async function POST(req: Request) {
     // Call Claude with tools
     const { text: reply } = await generateText({
       model: getLanguageModel(DEFAULT_CHAT_MODEL),
-      system: "You are a helpful AI assistant. Reply in the same language as the user. Be concise and friendly. When asked about weather, always use the getWeather tool to get real-time data.",
+      system: "You are a helpful AI assistant. Reply in the same language as the user. Be concise and friendly. Always use tools to get real-time data: use getWeather for weather, searchWeb for current events, getWikipedia for facts, getCurrentTime for time/date, convertCurrency for exchange rates, fetchUrl to read a webpage, and calculate for math.",
       messages: history,
-      tools: { getWeather },
-      stopWhen: stepCountIs(3),
+      tools: { getWeather, searchWeb, getWikipedia, getCurrentTime, convertCurrency, fetchUrl, calculate },
+      stopWhen: stepCountIs(5),
     });
 
     // Save both messages to DB
