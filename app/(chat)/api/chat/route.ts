@@ -31,6 +31,7 @@ import { getCurrentTime } from "@/lib/ai/tools/get-current-time";
 import { convertCurrency } from "@/lib/ai/tools/convert-currency";
 import { fetchUrl } from "@/lib/ai/tools/fetch-url";
 import { calculate } from "@/lib/ai/tools/calculate";
+import { executeCode } from "@/lib/ai/tools/execute-code";
 import { isProductionEnvironment } from "@/lib/constants";
 import {
   createStreamId,
@@ -217,6 +218,7 @@ export async function POST(request: Request) {
                   "convertCurrency",
                   "fetchUrl",
                   "calculate",
+                  "executeCode",
                 ],
           providerOptions: {
             ...(modelConfig?.gatewayOrder && {
@@ -234,6 +236,7 @@ export async function POST(request: Request) {
             convertCurrency,
             fetchUrl,
             calculate,
+            executeCode,
             createDocument: createDocument({
               session,
               dataStream,
