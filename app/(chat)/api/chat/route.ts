@@ -25,6 +25,12 @@ import { editDocument } from "@/lib/ai/tools/edit-document";
 import { getWeather } from "@/lib/ai/tools/get-weather";
 import { requestSuggestions } from "@/lib/ai/tools/request-suggestions";
 import { updateDocument } from "@/lib/ai/tools/update-document";
+import { searchWeb } from "@/lib/ai/tools/search-web";
+import { getWikipedia } from "@/lib/ai/tools/get-wikipedia";
+import { getCurrentTime } from "@/lib/ai/tools/get-current-time";
+import { convertCurrency } from "@/lib/ai/tools/convert-currency";
+import { fetchUrl } from "@/lib/ai/tools/fetch-url";
+import { calculate } from "@/lib/ai/tools/calculate";
 import { isProductionEnvironment } from "@/lib/constants";
 import {
   createStreamId,
@@ -205,6 +211,12 @@ export async function POST(request: Request) {
                   "editDocument",
                   "updateDocument",
                   "requestSuggestions",
+                  "searchWeb",
+                  "getWikipedia",
+                  "getCurrentTime",
+                  "convertCurrency",
+                  "fetchUrl",
+                  "calculate",
                 ],
           providerOptions: {
             ...(modelConfig?.gatewayOrder && {
@@ -216,6 +228,12 @@ export async function POST(request: Request) {
           },
           tools: {
             getWeather,
+            searchWeb,
+            getWikipedia,
+            getCurrentTime,
+            convertCurrency,
+            fetchUrl,
+            calculate,
             createDocument: createDocument({
               session,
               dataStream,
