@@ -1,6 +1,7 @@
 import { generateText } from "ai";
 import { getLanguageModel } from "@/lib/ai/providers";
 import { DEFAULT_CHAT_MODEL } from "@/lib/ai/models";
+import { getWeather } from "@/lib/ai/tools/get-weather";
 import {
   getUser,
   createUser,
@@ -182,11 +183,13 @@ export async function POST(req: Request) {
     // Add current message to history
     history.push({ role: "user", content: text });
 
-    // Call Claude
+    // Call Claude with tools
     const { text: reply } = await generateText({
       model: getLanguageModel(DEFAULT_CHAT_MODEL),
-      system: "You are a helpful AI assistant. Reply in the same language as the user. Be concise and friendly.",
+      system: "You are a helpful AI assistant. Reply in the same language as the user. Be concise and friendly. When asked about weather, always use the getWeather tool to get real-time data.",
       messages: history,
+      tools: { getWeather },
+      maxSteps: 3,
     });
 
     // Save both messages to DB
