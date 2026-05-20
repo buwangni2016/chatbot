@@ -1,29 +1,32 @@
-import { customProvider, gateway } from "ai";
+import { createAnthropic } from "@ai-sdk/anthropic";
 import { isTestEnvironment } from "../constants";
-import { titleModel } from "./models";
 
-export const myProvider = isTestEnvironment
-  ? (() => {
-      const { chatModel, titleModel } = require("./models.mock");
-      return customProvider({
-        languageModels: {
-          "chat-model": chatModel,
-          "title-model": titleModel,
-        },
-      });
-    })()
-  : null;
+let _provider: ReturnType<typeof createAnthropic> | null = null;
+
+function getProvider() {
+  if (!_provider) {
+    _provider = createAnthropic({
+      apiKey: process.env.ANTHROPIC_API_KEY ?? "",
+      baseURL: process.env.ANTHROPIC_BASE_URL
+        ? `${process.env.ANTHROPIC_BASE_URL}/v1`
+        : "https://api.anthropic.com/v1",
+    });
+  }
+  return _provider;
+}
 
 export function getLanguageModel(modelId: string) {
-  if (isTestEnvironment && myProvider) {
-    return myProvider.languageModel(modelId);
+  if (isTestEnvironment) {
+    // In test environment, return a mock
+    const { customProvider } = require("ai");
+    const { chatModel } = require("./models.mock");
+    return customProvider({ languageModels: { [modelId]: chatModel } }).languageModel(modelId);
   }
-  return gateway.languageModel(modelId);
+  // Strip provider prefix if present (gateway uses "anthropic/model-id" format)
+  const id = modelId.includes("/") ? modelId.split("/").slice(1).join("/") : modelId;
+  return getProvider()(id);
 }
 
 export function getTitleModel() {
-  if (isTestEnvironment && myProvider) {
-    return myProvider.languageModel("title-model");
-  }
-  return gateway.languageModel(titleModel.id);
+  return getProvider()("claude-3-5-haiku-20241022");
 }
