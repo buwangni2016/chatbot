@@ -77,7 +77,7 @@ export const executeCode = tool({
       return { error: `Sandbox error: ${e.message ?? String(e)}` };
     } finally {
       if (sandbox) {
-        try { await sandbox.destroy(); } catch {}
+        try { await sandbox.stop(); } catch {}
       }
     }
   },
