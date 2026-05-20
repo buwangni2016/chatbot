@@ -1,4 +1,4 @@
-import { generateText } from "ai";
+import { generateText, stepCountIs } from "ai";
 import { getLanguageModel } from "@/lib/ai/providers";
 import { DEFAULT_CHAT_MODEL } from "@/lib/ai/models";
 import { getWeather } from "@/lib/ai/tools/get-weather";
@@ -189,7 +189,7 @@ export async function POST(req: Request) {
       system: "You are a helpful AI assistant. Reply in the same language as the user. Be concise and friendly. When asked about weather, always use the getWeather tool to get real-time data.",
       messages: history,
       tools: { getWeather },
-      maxSteps: 3,
+      stopWhen: stepCountIs(3),
     });
 
     // Save both messages to DB
