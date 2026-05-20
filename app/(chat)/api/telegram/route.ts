@@ -8,6 +8,7 @@ import { getCurrentTime } from "@/lib/ai/tools/get-current-time";
 import { convertCurrency } from "@/lib/ai/tools/convert-currency";
 import { fetchUrl } from "@/lib/ai/tools/fetch-url";
 import { calculate } from "@/lib/ai/tools/calculate";
+import { executeCode } from "@/lib/ai/tools/execute-code";
 import {
   getUser,
   createUser,
@@ -194,7 +195,7 @@ export async function POST(req: Request) {
       model: getLanguageModel(DEFAULT_CHAT_MODEL),
       system: "You are a helpful AI assistant. Reply in the same language as the user. Be concise and friendly. Always use tools to get real-time data: use getWeather for weather, searchWeb for current events, getWikipedia for facts, getCurrentTime for time/date, convertCurrency for exchange rates, fetchUrl to read a webpage, and calculate for math.",
       messages: history,
-      tools: { getWeather, searchWeb, getWikipedia, getCurrentTime, convertCurrency, fetchUrl, calculate },
+      tools: { getWeather, searchWeb, getWikipedia, getCurrentTime, convertCurrency, fetchUrl, calculate, executeCode },
       stopWhen: stepCountIs(5),
     });
 
