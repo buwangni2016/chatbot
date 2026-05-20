@@ -5,9 +5,10 @@ import { getWeather } from "@/lib/ai/tools/get-weather";
 import { searchWeb } from "@/lib/ai/tools/search-web";
 import { getCurrentTime } from "@/lib/ai/tools/get-current-time";
 
-const BOT_TOKEN   = process.env.TELEGRAM_BOT_TOKEN!;
-const ADMIN_CHATS = (process.env.TELEGRAM_ADMIN_CHAT_IDS ?? "").split(",").map(s => s.trim()).filter(Boolean);
-const CRON_SECRET = process.env.CRON_SECRET ?? "";
+// CRON_SECRET is automatically injected by Vercel for cron jobs
+const CRON_SECRET   = process.env.CRON_SECRET ?? "";
+const BOT_TOKEN     = process.env.TELEGRAM_BOT_TOKEN!;
+const ADMIN_CHATS   = (process.env.TELEGRAM_ADMIN_CHAT_IDS ?? "").split(",").map(s => s.trim()).filter(Boolean);
 
 async function sendTg(chatId: string, text: string) {
   await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -18,9 +19,19 @@ async function sendTg(chatId: string, text: string) {
 }
 
 export async function GET(req: Request) {
-  // Verify Vercel Cron secret
   const authHeader = req.headers.get("authorization");
-  if (CRON_SECRET && authHeader !== `Bearer ${CRON_SECRET}`) {
+  const { searchParams } = new URL(req.url);
+  const manualKey = searchParams.get("key");
+
+  // Allow: Vercel Cron (CRON_SECRET header) OR manual trigger with correct key
+  const isVercelCron = CRON_SECRET && authHeader === `Bearer ${CRON_SECRET}`;
+  const isManual     = manualKey && ADMIN_CHATS.includes(manualKey);
+
+  if (!isVercelCron && !isManual) {
+    // If no CRON_SECRET set yet (first deploy), allow to check setup
+    if (!CRON_SECRET) {
+      return Response.json({ status: "CRON_SECRET not yet configured by Vercel" });
+    }
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -29,7 +40,6 @@ export async function GET(req: Request) {
   }
 
   try {
-    // Get city from env or default to Shanghai
     const city = process.env.BRIEF_CITY ?? "上海";
 
     const { text: brief } = await generateText({
@@ -37,25 +47,22 @@ export async function GET(req: Request) {
       system:
         "You are a morning briefing assistant. Create a concise daily brief in Chinese. " +
         "Format with clear sections. Keep it under 600 characters total.",
-      messages: [
-        {
-          role: "user",
-          content:
-            `生成今日早报，包含以下内容：\n` +
-            `1. 今天日期和${city}天气\n` +
-            `2. 今日国内外3条重要新闻标题\n` +
-            `3. 一句今日鼓励语\n` +
-            `格式简洁，适合在手机上阅读。`,
-        },
-      ],
+      messages: [{
+        role: "user",
+        content:
+          `生成今日早报，包含：\n` +
+          `1. 今天日期和${city}天气（温度、天气状况）\n` +
+          `2. 今日3条重要新闻标题\n` +
+          `3. 一句鼓励语\n` +
+          `格式简洁，适合手机阅读。`,
+      }],
       tools: { getWeather, searchWeb, getCurrentTime },
       stopWhen: stepCountIs(4),
     });
 
-    // Send to all admin chats
     await Promise.all(ADMIN_CHATS.map(id => sendTg(id, `🌅 *每日早报*\n\n${brief}`)));
 
-    return Response.json({ ok: true, sent: ADMIN_CHATS.length, preview: brief.slice(0, 100) });
+    return Response.json({ ok: true, sent: ADMIN_CHATS.length });
   } catch (err: any) {
     console.error("[cron/daily-brief]", err);
     return Response.json({ error: err.message }, { status: 500 });
