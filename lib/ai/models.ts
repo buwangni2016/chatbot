@@ -1,4 +1,5 @@
 export const DEFAULT_CHAT_MODEL = "anthropic/claude-3-5-haiku-20241022";
+export const isDemo = false;
 
 export const titleModel = {
   id: "anthropic/claude-3-5-haiku-20241022",
@@ -20,6 +21,7 @@ export type ChatModel = {
   provider: string;
   description: string;
   gatewayOrder?: string[];
+  capabilities?: ModelCapabilities;
   reasoningEffort?: "none" | "minimal" | "low" | "medium" | "high";
 };
 
@@ -48,6 +50,10 @@ export const chatModels: ChatModel[] = [
 ];
 
 export const allowedModelIds = chatModels.map((m) => m.id);
+
+export async function getAllGatewayModels(): Promise<ChatModel[]> {
+  return chatModels;
+}
 
 export async function getCapabilities(): Promise<
   Record<string, ModelCapabilities>
