@@ -227,6 +227,7 @@ export const ReasoningContent = memo(
           ref={scrollRef}
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
+          {/* @ts-ignore - streamdown dir type mismatch */}
           <Streamdown plugins={streamdownPlugins} {...props}>
             {children}
           </Streamdown>
