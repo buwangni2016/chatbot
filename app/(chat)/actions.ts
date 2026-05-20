@@ -29,7 +29,7 @@ export async function generateTitleFromUserMessage({
     model: getTitleModel(),
     system: titlePrompt,
     prompt: getTextFromMessage(message),
-    // providerOptions removed - using direct Anthropic provider
+  });
   return text
     .replace(/^[#*"\s]+/, "")
     .replace(/["]+$/, "")
