@@ -43,6 +43,18 @@ const LINKS = [
     ],
   },
   {
+    group: "AI 模型",
+    items: [
+      {
+        icon: "🔀",
+        label: "AnyRouter",
+        desc: "AI 模型路由控制台",
+        url: "https://anyrouter.top/console",
+        color: "#059669",
+      },
+    ],
+  },
+  {
     group: "Bot 配置",
     items: [
       {
