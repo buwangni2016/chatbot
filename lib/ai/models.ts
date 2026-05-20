@@ -6,7 +6,6 @@ export const titleModel = {
   name: "Claude Haiku 3.5",
   provider: "anthropic",
   description: "Fast model for title generation",
-  gatewayOrder: ["anthropic"],
 };
 
 export type ModelCapabilities = {
@@ -27,25 +26,22 @@ export type ChatModel = {
 
 export const chatModels: ChatModel[] = [
   {
+    id: "anthropic/claude-haiku-4-5-20251001",
+    name: "Claude Haiku 4.5",
+    provider: "anthropic",
+    description: "Fast and efficient",
+  },
+  {
     id: "anthropic/claude-3-5-haiku-20241022",
     name: "Claude Haiku 3.5",
     provider: "anthropic",
-    description: "Fast and efficient Claude model",
-    gatewayOrder: ["anthropic"],
+    description: "Fast model",
   },
   {
     id: "anthropic/claude-3-5-sonnet-20241022",
     name: "Claude Sonnet 3.5",
     provider: "anthropic",
-    description: "Balanced Claude model",
-    gatewayOrder: ["anthropic"],
-  },
-  {
-    id: "anthropic/claude-opus-4-5-20251101",
-    name: "Claude Opus 4.5",
-    provider: "anthropic",
-    description: "Most capable Claude model",
-    gatewayOrder: ["anthropic"],
+    description: "Balanced model",
   },
 ];
 
@@ -55,13 +51,8 @@ export async function getAllGatewayModels(): Promise<ChatModel[]> {
   return chatModels;
 }
 
-export async function getCapabilities(): Promise<
-  Record<string, ModelCapabilities>
-> {
+export async function getCapabilities(): Promise<Record<string, ModelCapabilities>> {
   return Object.fromEntries(
-    chatModels.map((m) => [
-      m.id,
-      { tools: true, vision: true, reasoning: false },
-    ])
+    chatModels.map((m) => [m.id, { tools: true, vision: true, reasoning: false }])
   );
 }
