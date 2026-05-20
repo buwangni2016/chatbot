@@ -1,30 +1,17 @@
-import { customProvider, gateway } from "ai";
+import { createAnthropic } from "@ai-sdk/anthropic";
 import { isTestEnvironment } from "../constants";
-import { titleModel } from "./models";
 
-export const myProvider = isTestEnvironment
-  ? (() => {
-      const { chatModel, titleModel } = require("./models.mock");
-      return customProvider({
-        languageModels: {
-          "chat-model": chatModel,
-          "title-model": titleModel,
-        },
-      });
-    })()
-  : null;
+const anthropic = createAnthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY ?? "",
+  baseURL: process.env.ANTHROPIC_BASE_URL
+    ? `${process.env.ANTHROPIC_BASE_URL}/v1`
+    : undefined,
+});
 
 export function getLanguageModel(modelId: string) {
-  if (isTestEnvironment && myProvider) {
-    return myProvider.languageModel(modelId);
-  }
-
-  return gateway.languageModel(modelId);
+  return anthropic(modelId);
 }
 
 export function getTitleModel() {
-  if (isTestEnvironment && myProvider) {
-    return myProvider.languageModel("title-model");
-  }
-  return gateway.languageModel(titleModel.id);
+  return anthropic("claude-haiku-4-5-20251001");
 }
