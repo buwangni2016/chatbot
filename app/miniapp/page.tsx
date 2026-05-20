@@ -8,7 +8,7 @@ const LINKS = [
     group: "AI 助手",
     items: [
       {
-        icon: "💬",
+        favicon: "https://www.anthropic.com/favicon.ico",
         label: "Chatbot 网页版",
         desc: "在浏览器中使用完整 AI 对话",
         url: "https://chatbot-beta-weld-29.vercel.app",
@@ -20,21 +20,21 @@ const LINKS = [
     group: "管理控制台",
     items: [
       {
-        icon: "⚡",
+        favicon: "https://vercel.com/favicon.ico",
         label: "Vercel 仪表板",
         desc: "查看部署状态、日志、资源用量",
         url: "https://vercel.com/buwangni2016s-projects",
         color: "#000000",
       },
       {
-        icon: "🐙",
+        favicon: "https://github.com/favicon.ico",
         label: "GitHub 仓库",
         desc: "查看 chatbot / claude-agent 代码",
         url: "https://github.com/buwangni2016",
         color: "#24292e",
       },
       {
-        icon: "🔗",
+        favicon: "https://www.maton.ai/favicon.ico",
         label: "Maton AI",
         desc: "管理连接器、查看任务历史",
         url: "https://www.maton.ai",
@@ -46,7 +46,7 @@ const LINKS = [
     group: "AI 模型",
     items: [
       {
-        icon: "🔀",
+        favicon: "https://anyrouter.top/favicon.ico",
         label: "AnyRouter",
         desc: "AI 模型路由控制台",
         url: "https://anyrouter.top/console",
@@ -58,25 +58,25 @@ const LINKS = [
     group: "Bot 配置",
     items: [
       {
-        icon: "🤖",
+        favicon: "https://telegram.org/favicon.ico",
         label: "BotFather",
         desc: "修改 Bot 名称、命令、Mini App",
         url: "https://t.me/BotFather",
         color: "#0088cc",
       },
       {
-        icon: "🗄️",
+        favicon: "https://neon.tech/favicon.ico",
         label: "Neon 数据库",
         desc: "查看对话历史数据库",
         url: "https://console.neon.tech",
         color: "#00e5a0",
       },
       {
-        icon: "📊",
+        favicon: "https://vercel.com/favicon.ico",
         label: "Vercel Chatbot 项目",
         desc: "环境变量、域名、函数日志",
         url: "https://vercel.com/buwangni2016s-projects/chatbot",
-        color: "#f59e0b",
+        color: "#000000",
       },
     ],
   },
@@ -191,12 +191,21 @@ export default function MiniAppPage() {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        fontSize: 20,
                         flexShrink: 0,
                         marginRight: 12,
+                        overflow: "hidden",
                       }}
                     >
-                      {item.icon}
+                      <img
+                        src={item.favicon}
+                        alt={item.label}
+                        width={24}
+                        height={24}
+                        style={{ objectFit: "contain", borderRadius: 4 }}
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = "none";
+                        }}
+                      />
                     </div>
                     {/* Text */}
                     <div style={{ flex: 1, minWidth: 0 }}>
