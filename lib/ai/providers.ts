@@ -1,11 +1,10 @@
 import { createAnthropic } from "@ai-sdk/anthropic";
-import { isTestEnvironment } from "../constants";
 
 const anthropic = createAnthropic({
   apiKey: process.env.ANTHROPIC_API_KEY ?? "",
   baseURL: process.env.ANTHROPIC_BASE_URL
     ? `${process.env.ANTHROPIC_BASE_URL}/v1`
-    : undefined,
+    : "https://api.anthropic.com/v1",
 });
 
 export function getLanguageModel(modelId: string) {
