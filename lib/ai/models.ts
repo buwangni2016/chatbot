@@ -1,11 +1,12 @@
-export const DEFAULT_CHAT_MODEL = "anthropic/claude-3-5-haiku-20241022";
+export const DEFAULT_CHAT_MODEL = "anthropic/claude-haiku-4-5-20251001";
 export const isDemo = false;
 
 export const titleModel = {
-  id: "anthropic/claude-3-5-haiku-20241022",
-  name: "Claude Haiku 3.5",
+  id: "anthropic/claude-haiku-4-5-20251001",
+  name: "Claude Haiku 4.5",
   provider: "anthropic",
   description: "Fast model for title generation",
+  gatewayOrder: ["anthropic"] as string[],
 };
 
 export type ModelCapabilities = {
@@ -30,18 +31,21 @@ export const chatModels: ChatModel[] = [
     name: "Claude Haiku 4.5",
     provider: "anthropic",
     description: "Fast and efficient",
+    gatewayOrder: ["anthropic"],
   },
   {
     id: "anthropic/claude-3-5-haiku-20241022",
     name: "Claude Haiku 3.5",
     provider: "anthropic",
     description: "Fast model",
+    gatewayOrder: ["anthropic"],
   },
   {
     id: "anthropic/claude-3-5-sonnet-20241022",
     name: "Claude Sonnet 3.5",
     provider: "anthropic",
     description: "Balanced model",
+    gatewayOrder: ["anthropic"],
   },
 ];
 
