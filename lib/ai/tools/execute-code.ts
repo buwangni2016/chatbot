@@ -2,16 +2,22 @@ import { tool } from "ai";
 import { z } from "zod";
 import { Sandbox } from "@vercel/sandbox";
 
-const PROJECT_ID = process.env.VERCEL_PROJECT_ID!;
-const TEAM_ID    = process.env.VERCEL_TEAM_ID ?? process.env.VERCEL_ORG_ID;
-const TOKEN      = process.env.VERCEL_TOKEN;
+const VERCEL_TOKEN = process.env.VERCEL_TOKEN;
+const VERCEL_TEAM_ID = process.env.VERCEL_TEAM_ID ?? process.env.VERCEL_ORG_ID;
+const VERCEL_PROJECT_ID = process.env.VERCEL_PROJECT_ID;
+
+// Check if sandbox is properly configured
+const hasSandboxConfig = VERCEL_TOKEN && VERCEL_TEAM_ID && VERCEL_PROJECT_ID;
 
 export const executeCode = tool({
   description:
     "Execute code in an isolated Vercel Sandbox and return the output. " +
-    "Supports Python 3 and Node.js. Use for data processing, calculations, " +
-    "file generation, web scraping, or any real computation task. " +
-    "The sandbox has internet access and common packages available.",
+    (hasSandboxConfig 
+      ? "Supports Python 3 and Node.js. Use for data processing, calculations, " +
+        "file generation, web scraping, or any real computation task. " +
+        "The sandbox has internet access and common packages available."
+      : "Code sandbox not configured (VERCEL_API_TOKEN, VERCEL_TEAM_ID, or VERCEL_PROJECT_ID missing). " +
+        "This tool will return an error. Set these environment variables to enable sandbox execution."),
   inputSchema: z.object({
     language: z
       .enum(["python", "node"])
@@ -23,15 +29,21 @@ export const executeCode = tool({
       .describe("Extra packages to install first (e.g. ['requests', 'pandas'])"),
   }),
   execute: async ({ language, code, packages = [] }) => {
+    if (!hasSandboxConfig) {
+      return {
+        error: "Code sandbox not configured. Set VERCEL_TOKEN, VERCEL_TEAM_ID, and VERCEL_PROJECT_ID environment variables to enable."
+      };
+    }
+
     let sandbox: Sandbox | null = null;
     try {
       sandbox = await Sandbox.create({
         runtime: "node22",
         resources: { vcpus: 1 },
         timeout: 60_000,
-        ...(TOKEN && TEAM_ID && PROJECT_ID
-          ? { token: TOKEN, teamId: TEAM_ID, projectId: PROJECT_ID }
-          : {}),
+        token: VERCEL_TOKEN,
+        teamId: VERCEL_TEAM_ID,
+        projectId: VERCEL_PROJECT_ID,
       });
 
       // Install packages first
